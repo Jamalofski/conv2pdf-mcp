@@ -12,7 +12,7 @@ export const INSTRUCTIONS =
   'conv2pdf converts and edits files that are on this computer: Office documents, images and e-books to PDF, ' +
   'PDF to Word or to images, and merging, extracting pages, rotating, numbering, watermarking, compressing, ' +
   'protecting or unlocking PDFs. Give a tool the path of the file: the result is written next to it, or at ' +
-  'output_path, and its path is returned. The files are uploaded to conv2pdf, hosted in France, which deletes ' +
+  'output_path, and its path is returned. The files are uploaded to conv2pdf, hosted in the EU (France), which deletes ' +
   'them once the result is downloaded. Each conversion uses one unit of the quota of the API key, including one ' +
   'that conv2pdf refuses after reading the file (an unreadable or scanned PDF, too many pages); a refused setting, ' +
   'such as a page range that does not exist, and a failure on the side of conv2pdf are not counted. get_quota ' +

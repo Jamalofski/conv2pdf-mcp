@@ -1,7 +1,7 @@
 {
   "name": "conv2pdf-mcp",
   "version": "1.0.1",
-  "description": "Official MCP server of the conv2pdf API: an AI assistant converts Office documents, images and e-books to PDF, and merges, splits, compresses, protects or converts the PDFs of your computer. Hosted in France.",
+  "description": "Official MCP server of the conv2pdf API: an AI assistant converts Office documents, images and e-books to PDF, and merges, splits, compresses, protects or converts the PDFs of your computer. Hosted in the EU (France).",
   "license": "MIT",
   "homepage": "https://conv2pdf.com/en/api/",
   "mcpName": "com.conv2pdf/conv2pdf",
