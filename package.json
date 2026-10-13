@@ -35,10 +35,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamalofski/conv2pdf-mcp.git"
+    "url": "git+https://github.com/Jamalofski/conv2pdf-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/jamalofski/conv2pdf-mcp/issues"
+    "url": "https://github.com/Jamalofski/conv2pdf-mcp/issues"
   },
   "scripts": {
     "test": "node --test test/*.test.js",
