@@ -4,7 +4,7 @@ import { TO_PDF_TOOLS } from '../src/tools.js';
 
 // The other tools of the API, each behind a tool of this server.
 const PDF_TOOLS = [
-  'heic-to-jpg', 'merge-pdf', 'split-pdf', 'compress-pdf', 'protect-pdf', 'pdf-to-word', 'pdf-to-image',
+  'heic-to-jpg', 'merge-pdf', 'split-pdf', 'extract-pages', 'url-to-pdf', 'compress-pdf', 'protect-pdf', 'pdf-to-word', 'pdf-to-image',
   'rotate-pdf', 'unlock-pdf', 'watermark-pdf', 'page-numbers-pdf',
 ];
 

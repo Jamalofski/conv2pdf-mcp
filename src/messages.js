@@ -17,8 +17,33 @@ const OFFICE_ELSEWHERE = 'This file is an office document: use convert_to_pdf, w
 const IMAGE_ELSEWHERE = 'This file is an image: use convert_to_pdf, with the extension of its real format.';
 const WEB_PAGE = 'This file contains a web page, not the expected document.';
 
+// Why an address was refused (`cause` of `invalid_url`).
+const URL_CAUSES = {
+  malformed: 'Write the full address, starting with https:// or http://.',
+  scheme: 'Only http and https addresses can be converted.',
+  credentials: 'Remove the user name and password from the address: conv2pdf opens the page without signing in.',
+  private_address: 'conv2pdf only opens public web pages, not addresses of a private or local network.',
+  local_name: 'conv2pdf only opens public web pages, not names of a local network.',
+  too_long: 'The address is too long.',
+};
+
+// Why a page range was refused (`cause` of `invalid_page_range`), once the range reads.
+function rangeCause(body) {
+  if (body.cause === 'page_zero') return 'Page numbers start at 1.';
+  if (body.cause === 'beyond_last_page') {
+    return Number.isInteger(body.total_pages)
+      ? `The PDF has ${body.total_pages} page${body.total_pages === 1 ? '' : 's'}.`
+      : 'A page is beyond the last page of the PDF.';
+  }
+  if (body.cause === 'whole_document') {
+    return 'These pages are the whole document, in its order: the result would be the same PDF.';
+  }
+  return 'Use page numbers and ranges separated by commas, such as 1-5,7,10-12.';
+}
+
 // What conv2pdf found in a file that does not match the tool (`detected_type`).
 const CONTENT_HINTS = {
+  postscript: 'This file is a PostScript document: give it the .ps or .eps extension and use convert_to_pdf.',
   pdf: 'This file is already a PDF.',
   epub: 'This file is an EPUB e-book: give it the .epub extension and use convert_to_pdf.',
   pages: OFFICE_ELSEWHERE,
@@ -35,7 +60,7 @@ const CONTENT_HINTS = {
   webp: IMAGE_ELSEWHERE,
   tiff: IMAGE_ELSEWHERE,
   heic: 'This file is a HEIC photo: give it the .heic extension and use convert_to_pdf or convert_heic_to_jpg.',
-  html: WEB_PAGE,
+  html: 'This file is a web page: give it the .html extension and use convert_to_pdf.',
   xml: WEB_PAGE,
   svg: WEB_PAGE,
   text: 'This file contains plain text, not the expected document.',
@@ -71,7 +96,7 @@ const MESSAGES = {
   source_unreadable: 'conv2pdf could not read this file: it may be damaged or incomplete.',
   field_required: (body) => `The "${typeof body.field === 'string' ? body.field : 'required'}" field is empty.`,
   invalid_page_range: (body) =>
-    `The pages${typeof body.range === 'string' ? ` "${body.range}"` : ''} are not valid${Number.isInteger(body.total_pages) ? ` for this PDF of ${body.total_pages} page${body.total_pages === 1 ? '' : 's'}` : ''}. Use page numbers and ranges separated by commas, such as 1-5,7,10-12.`,
+    `The pages${typeof body.range === 'string' ? ` "${body.range}"` : ''} are not valid. ${rangeCause(body)}`,
   invalid_rotation: 'The rotation must be 90, 180 or 270 degrees.',
   invalid_format: 'This format is not accepted by the tool.',
   invalid_quality: 'The quality must be low, medium or high.',
@@ -92,6 +117,21 @@ const MESSAGES = {
   epub_blank_output:
     'This e-book cannot be converted: its pages are full-screen images (comics, picture books, manga), and their layout does not survive the conversion to PDF.',
   epub_too_long: 'The e-book is longer than the 1,500 pages conv2pdf converts at once.',
+  pdf_single_page: 'This PDF has a single page: there is nothing to split.',
+  ps_blank_output:
+    'This PostScript file draws no page: a file that only holds a font or a library of procedures, or whose program fails, produces none.',
+  html_blank_output:
+    'This HTML file prints as a blank page: nothing in it is drawn when printed. It may be empty, or hide its content for printing.',
+  invalid_url: (body) => `This web page address cannot be converted. ${own(URL_CAUSES, body.cause) ?? ''}`.trim(),
+  url_unreachable: 'The web page could not be reached. Check the address, and that the site is online and public.',
+  url_http_error: (body) =>
+    `The web page answered with an error${Number.isInteger(body.http_status) ? ` (HTTP ${body.http_status})` : ''}. Check that the address opens in a browser without signing in: conv2pdf opens the page without a session.`,
+  url_blocked:
+    'The web page leads to a private network address: conv2pdf only opens public web pages, and the page or one of its redirects points to a private or local network.',
+  url_blank_page:
+    'The web page prints as a blank page: its content may need a login, or be hidden for printing.',
+  no_file_expected: 'convert_url_to_pdf takes the address of a web page, not a file.',
+  tool_not_found: 'conv2pdf does not offer this tool: update the conv2pdf-mcp package.',
   output_too_large: 'The result is too large to be delivered.',
   // The API refunds the quota on these two, and on a refused setting (page range, rotation,
   // password length). A refusal that follows the reading of the file (unreadable or scanned

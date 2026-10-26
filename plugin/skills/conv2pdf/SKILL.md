@@ -1,6 +1,6 @@
 ---
 name: conv2pdf
-description: Convert and edit the files of the user's computer with the conv2pdf tools. Use when the user asks to turn a Word, Excel, PowerPoint, OpenDocument, Pages, image, HEIC or EPUB file into a PDF, to turn a PDF into a Word document or into images, or to merge, split, rotate, number, watermark, compress, password-protect or unlock PDFs, for one file or for a whole folder.
+description: Convert and edit the files of the user's computer with the conv2pdf tools. Use when the user asks to turn a Word, Excel, PowerPoint, OpenDocument, Pages, image, HEIC, EPUB, PostScript or HTML file, or a web page at an address, into a PDF, to turn a PDF into a Word document or into images, or to merge, split, extract pages from, rotate, number, watermark, compress, password-protect or unlock PDFs, for one file or for a whole folder.
 license: MIT
 compatibility: Needs the conv2pdf MCP server (npm package conv2pdf-mcp, Node.js 22 or later) and a conv2pdf API key.
 ---
@@ -20,12 +20,14 @@ The conv2pdf tools convert and edit files that are on the user's computer. A too
 
 | The user wants | Tool | To know |
 |---|---|---|
-| A PDF from a Word, Excel, PowerPoint, OpenDocument, Pages, RTF, TXT or CSV file, from a PNG, JPG, WebP, GIF, TIFF or HEIC image, or from an EPUB book | `convert_to_pdf` | One file per call. The converter is chosen from the extension |
+| A PDF from a Word, Excel, PowerPoint, OpenDocument, Pages, RTF, TXT or CSV file, from a PNG, JPG, WebP, GIF, TIFF or HEIC image, from an EPUB book, a PostScript or EPS file or an HTML file | `convert_to_pdf` | One file per call. The converter is chosen from the extension |
+| A PDF of a web page, from its address | `convert_url_to_pdf` | A public page only: it is opened without a session, so nothing behind a login. Give `output_path`, since there is no input file to write next to |
 | A JPG from an iPhone HEIC photo | `convert_heic_to_jpg` | |
 | An editable Word document from a PDF | `convert_pdf_to_word` | Only a PDF with real text. A scan is refused, and counted |
 | The pages of a PDF as images | `convert_pdf_to_images` | One ZIP of PNG or JPG files at 150 DPI, 100 pages at most |
 | One PDF out of several | `merge_pdfs` | In the order of the list. 2 files per call on the Dev plan, up to 20 on paid plans |
-| Some pages of a PDF, or a PDF split in parts | `extract_pdf_pages` | Pages as `1-5,7,10-12`. One call per file to produce |
+| Some pages of a PDF, in a new PDF | `extract_pdf_pages` | Pages as `1-5,7,10-12`, in the order written. One call per file to produce |
+| Every page of a PDF in its own file | `split_pdf` | One ZIP of single-page PDFs, 200 pages at most. A one-page PDF is refused, and counted |
 | Pages turned the right way | `rotate_pdf` | Every page, by 90, 180 or 270 degrees clockwise |
 | Page numbers | `add_page_numbers` | "3 / 12" or "3", at the bottom |
 | A text stamped across the pages | `add_watermark` | 50 characters at most, Latin letters, digits and punctuation |

@@ -9,11 +9,12 @@ import { InputError, discardOutput, inputFile, reserveOutput } from './files.js'
 import { NO_KEY, apiErrorText } from './messages.js';
 
 export const INSTRUCTIONS =
-  'conv2pdf converts and edits files that are on this computer: Office documents, images and e-books to PDF, ' +
-  'PDF to Word or to images, and merging, extracting pages, rotating, numbering, watermarking, compressing, ' +
-  'protecting or unlocking PDFs. Give a tool the path of the file: the result is written next to it, or at ' +
-  'output_path, and its path is returned. The files are uploaded to conv2pdf, hosted in the EU (France), which deletes ' +
-  'them once the result is downloaded. Each conversion uses one unit of the quota of the API key, including one ' +
+  'conv2pdf converts and edits files that are on this computer: Office documents, images, e-books, PostScript and ' +
+  'HTML files to PDF, PDF to Word or to images, and merging, splitting, extracting pages, rotating, numbering, ' +
+  'watermarking, compressing, protecting or unlocking PDFs. It also converts a public web page to PDF from its ' +
+  'address. Give a tool the path of the file: the result is written next to it, or at output_path, and its path is ' +
+  'returned. The files are uploaded to conv2pdf, hosted in the EU (France), which deletes them once the result is ' +
+  'downloaded. Each conversion uses one unit of the quota of the API key, including one ' +
   'that conv2pdf refuses after reading the file (an unreadable or scanned PDF, too many pages); a refused setting, ' +
   'such as a page range that does not exist, and a failure on the side of conv2pdf are not counted. get_quota ' +
   'tells what is left.';
@@ -28,6 +29,8 @@ export const TO_PDF_TOOLS = {
   'image-to-pdf': ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.tiff', '.tif'],
   'heic-to-pdf': ['.heic', '.heif'],
   'epub-to-pdf': ['.epub'],
+  'ps-to-pdf': ['.ps', '.eps'],
+  'html-to-pdf': ['.html', '.htm', '.xhtml'],
 };
 
 function toPdfTool(input) {
@@ -52,6 +55,11 @@ const OUTPUT_PATH = {
   description:
     'Where to write the result. Optional: by default next to the input file, under a name that is not taken. An existing file is never overwritten.',
 };
+const OUTPUT_PATH_REQUIRED = {
+  type: 'string',
+  description:
+    'Where to write the PDF, such as ~/Documents/page.pdf: absolute, or relative to the working directory of the server. An existing file is never overwritten.',
+};
 const PDF_PASSWORD = {
   type: 'string',
   description: 'Password of the PDF, only if it asks for one to open. The result has no password.',
@@ -63,14 +71,30 @@ const PDF_PASSWORD = {
 //   fields: the form fields sent with the file, from the arguments
 //   suffix, extension: the default name of the result
 //   messages: the API error codes this tool words itself
+//   noFile, sent: a tool that sends no file (url-to-pdf), and what its call sends instead;
+//     with no input to name the result after, its output_path is required
 const FILE_TOOLS = [
   {
     name: 'convert_to_pdf',
     title: 'Convert to PDF',
     description:
-      'Converts a document, an image or an e-book to PDF: Word, Excel, PowerPoint, OpenDocument, Apple Pages, RTF, TXT, CSV, PNG, JPG, WebP, GIF, TIFF, HEIC and EPUB. The converter is chosen from the extension of the file.',
+      'Converts a document, an image, an e-book or a web page saved as a file to PDF: Word, Excel, PowerPoint, OpenDocument, Apple Pages, RTF, TXT, CSV, PNG, JPG, WebP, GIF, TIFF, HEIC, EPUB, PostScript (PS, EPS) and HTML. The converter is chosen from the extension of the file. An HTML file is printed as a browser would print it.',
     api: toPdfTool,
     extension: '.pdf',
+  },
+  {
+    name: 'convert_url_to_pdf',
+    title: 'Convert Web Page to PDF',
+    description:
+      'Converts the public web page at an address to PDF, as a browser prints it: the text stays selectable and the links work. The page is opened without a session, so a page behind a login is out of reach.',
+    sent: 'The address is sent to conv2pdf, which opens the page, and the call counts as one conversion.',
+    api: 'url-to-pdf',
+    noFile: true,
+    properties: {
+      url: { type: 'string', description: 'Address of the page, starting with https:// or http://.' },
+    },
+    required: ['url'],
+    fields: (args) => ({ url: String(args.url).trim() }),
   },
   {
     name: 'convert_heic_to_jpg',
@@ -118,18 +142,30 @@ const FILE_TOOLS = [
   {
     name: 'extract_pdf_pages',
     title: 'Extract Pages From PDF',
-    description: 'Keeps some pages of a PDF in a new PDF. The pages keep the order they have in the document.',
-    api: 'split-pdf',
+    description: 'Copies the pages you list into a new PDF, in the order you write them.',
+    api: 'extract-pages',
     properties: {
       pages: {
         type: 'string',
-        description: 'Pages to keep: numbers and ranges separated by commas, such as 1-5,7,10-12.',
+        description:
+          'Pages to keep, in the order wanted: numbers and ranges separated by commas, such as 1-5,7,10-12. 11- runs to the last page.',
       },
       password: PDF_PASSWORD,
     },
     required: ['pages'],
     fields: (args) => ({ ranges: args.pages, password: args.password }),
     suffix: '-pages',
+  },
+  {
+    name: 'split_pdf',
+    title: 'Split PDF',
+    description:
+      'Puts every page of a PDF in its own PDF file. The result is one ZIP archive, with page-001.pdf, page-002.pdf and so on. Up to 200 pages.',
+    api: 'split-pdf',
+    properties: { password: PDF_PASSWORD },
+    fields: (args) => ({ password: args.password }),
+    suffix: '-split',
+    extension: '.zip',
   },
   {
     name: 'rotate_pdf',
@@ -235,26 +271,38 @@ const FILE_TOOLS = [
   },
 ];
 
+function inputArguments(spec) {
+  if (spec.noFile) return {};
+  if (!spec.multiple) return { input_path: INPUT_PATH };
+  return {
+    input_paths: {
+      type: 'array',
+      items: { type: 'string' },
+      minItems: 2,
+      maxItems: 20,
+      description: 'Paths of the PDFs on this computer, in the order they must appear in the result.',
+    },
+  };
+}
+
+function requiredArguments(spec) {
+  if (spec.noFile) return [...(spec.required ?? []), 'output_path'];
+  return [spec.multiple ? 'input_paths' : 'input_path', ...(spec.required ?? [])];
+}
+
 function definition(spec) {
-  const input = spec.multiple
-    ? {
-        input_paths: {
-          type: 'array',
-          items: { type: 'string' },
-          minItems: 2,
-          maxItems: 20,
-          description: 'Paths of the PDFs on this computer, in the order they must appear in the result.',
-        },
-      }
-    : { input_path: INPUT_PATH };
   return {
     name: spec.name,
     title: spec.title,
-    description: `${spec.description} ${SENT}`,
+    description: `${spec.description} ${spec.sent ?? SENT}`,
     inputSchema: {
       type: 'object',
-      properties: { ...input, ...spec.properties, output_path: OUTPUT_PATH },
-      required: [spec.multiple ? 'input_paths' : 'input_path', ...(spec.required ?? [])],
+      properties: {
+        ...inputArguments(spec),
+        ...spec.properties,
+        output_path: spec.noFile ? OUTPUT_PATH_REQUIRED : OUTPUT_PATH,
+      },
+      required: requiredArguments(spec),
       additionalProperties: false,
     },
     // Each call writes a new file and never replaces one; the input leaves this computer.
@@ -277,6 +325,7 @@ const toolResult = (data) => ({ content: [{ type: 'text', text: JSON.stringify(d
 const toolError = (text) => ({ content: [{ type: 'text', text }], isError: true });
 
 async function inputFiles(spec, args) {
+  if (spec.noFile) return [];
   if (!spec.multiple) return [await inputFile(args.input_path, 'input_path')];
   if (!Array.isArray(args.input_paths) || args.input_paths.length < 2) {
     throw new InputError('"input_paths" must list at least 2 PDFs.');
@@ -287,7 +336,7 @@ async function inputFiles(spec, args) {
 }
 
 async function convertFile(spec, args, api, signal) {
-  for (const name of spec.required ?? []) {
+  for (const name of spec.noFile ? requiredArguments(spec) : spec.required ?? []) {
     if (args[name] === undefined || args[name] === '') throw new InputError(`"${name}" is required.`);
   }
   const inputs = await inputFiles(spec, args);

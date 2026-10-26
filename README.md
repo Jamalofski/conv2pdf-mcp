@@ -1,6 +1,6 @@
 # conv2pdf-mcp
 
-Official [Model Context Protocol](https://modelcontextprotocol.io) server of the [conv2pdf API](https://conv2pdf.com/en/api/). Your AI assistant converts Word, Excel, PowerPoint, Pages, images and e-books to PDF, converts PDFs to Word or to images, and merges, compresses, protects, rotates or numbers the PDFs that are on your computer. Processing runs on OVHcloud servers in France: no transfer outside the EU, no US service in the chain.
+Official [Model Context Protocol](https://modelcontextprotocol.io) server of the [conv2pdf API](https://conv2pdf.com/en/api/). Your AI assistant converts Word, Excel, PowerPoint, Pages, images, e-books, PostScript and HTML files to PDF, as well as web pages from their address, converts PDFs to Word or to images, and merges, splits, compresses, protects, rotates or numbers the PDFs that are on your computer. Processing runs on OVHcloud servers in France: no transfer outside the EU, no US service in the chain.
 
 [Installation](#installation) · [Tools](#tools) · [How it behaves](#how-it-behaves) · [Development](#development)
 
@@ -49,12 +49,14 @@ Then ask for what you need: "convert report.docx to PDF", "merge these three PDF
 
 | Tool | What it does |
 |---|---|
-| `convert_to_pdf` | Word, Excel, PowerPoint, OpenDocument, Apple Pages, RTF, TXT, CSV, PNG, JPG, WebP, GIF, TIFF, HEIC or EPUB file to PDF, chosen from the extension |
+| `convert_to_pdf` | Word, Excel, PowerPoint, OpenDocument, Apple Pages, RTF, TXT, CSV, PNG, JPG, WebP, GIF, TIFF, HEIC, EPUB, PostScript (PS, EPS) or HTML file to PDF, chosen from the extension |
+| `convert_url_to_pdf` | Public web page to PDF, from its address, printed as a browser would |
 | `convert_heic_to_jpg` | iPhone HEIC or HEIF photo to JPG |
 | `convert_pdf_to_word` | PDF with real text to an editable DOCX document |
 | `convert_pdf_to_images` | One PNG or JPG per page, in a ZIP file |
 | `merge_pdfs` | Combine several PDFs into one, in the order given |
-| `extract_pdf_pages` | Keep the pages you list, such as `1-5,7,10-12`, in a new PDF |
+| `extract_pdf_pages` | Copy the pages you list, such as `1-5,7,10-12`, into a new PDF, in the order written |
+| `split_pdf` | One PDF per page, in a ZIP file |
 | `rotate_pdf` | Turn every page by 90, 180 or 270 degrees |
 | `add_page_numbers` | Number the pages, as "3 / 12" or "3", bottom center, left or right |
 | `add_watermark` | Stamp a text of up to 50 characters on every page |
@@ -66,7 +68,7 @@ Then ask for what you need: "convert report.docx to PDF", "merge these three PDF
 ## How it behaves
 
 - **Files stay on your computer, except for the conversion.** A tool takes the path of a file, sends the file to conv2pdf and writes the result on your disk. conv2pdf checks the content of the file, not only its name.
-- **Nothing is overwritten.** The result goes next to the input file: `report.docx` gives `report.pdf`, and a PDF tool adds a suffix, such as `report-compressed.pdf`. When that name is taken, the server writes `report (2).pdf`. The assistant can choose the place with `output_path`; if a file is already there, the tool refuses before converting anything.
+- **Nothing is overwritten.** The result goes next to the input file: `report.docx` gives `report.pdf`, and a PDF tool adds a suffix, such as `report-compressed.pdf`. When that name is taken, the server writes `report (2).pdf`. The assistant can choose the place with `output_path`; if a file is already there, the tool refuses before converting anything. A web page has no input file to write next to, so `convert_url_to_pdf` always takes an `output_path`.
 - **Deleted from the server.** Once the result is on your disk, the server deletes the job from conv2pdf. Should that fail, conv2pdf deletes the files after one hour.
 - **Quota.** Each conversion counts as one in the quota of your plan, including one that conv2pdf refuses after reading the file, such as an unreadable or scanned PDF, or one with too many pages. A file refused on arrival (wrong type, too large, password missing), a refused setting (a page range that does not exist, a password that is too short) and a failure on the side of conv2pdf count for nothing, and `get_quota` is free. Files can weigh up to 10 MB on the Dev plan and 200 MB on paid plans.
 - **Rate limit.** The API accepts 20 conversions per minute per API key. When it asks to slow down, or when its queue is full, the server waits for the delay the API gives and tries again, twice at most and only for delays of 30 seconds or less; otherwise the assistant gets the delay to wait.

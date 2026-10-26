@@ -27,9 +27,9 @@ test('handshake, tool list and a clean exit when the input closes', { timeout: 2
   const list = JSON.parse(await server.line());
   assert.equal(list.id, 2);
   assert.deepEqual(list.result.tools.map((tool) => tool.name), [
-    'convert_to_pdf', 'convert_heic_to_jpg', 'convert_pdf_to_word', 'convert_pdf_to_images', 'merge_pdfs',
-    'extract_pdf_pages', 'rotate_pdf', 'add_page_numbers', 'add_watermark', 'compress_pdf', 'protect_pdf',
-    'unlock_pdf', 'get_quota',
+    'convert_to_pdf', 'convert_url_to_pdf', 'convert_heic_to_jpg', 'convert_pdf_to_word', 'convert_pdf_to_images',
+    'merge_pdfs', 'extract_pdf_pages', 'split_pdf', 'rotate_pdf', 'add_page_numbers', 'add_watermark', 'compress_pdf',
+    'protect_pdf', 'unlock_pdf', 'get_quota',
   ]);
   for (const tool of list.result.tools) {
     assert.equal(typeof tool.title, 'string');

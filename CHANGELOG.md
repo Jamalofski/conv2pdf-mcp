@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0 (2026-10-26)
+
+The server now covers every tool of the conv2pdf API.
+
+- `convert_url_to_pdf` converts the public web page at an address to PDF, as a browser prints it. It takes no input file, so its `output_path` is required.
+- `convert_to_pdf` also converts PostScript and EPS files (`.ps`, `.eps`) and HTML files (`.html`, `.htm`, `.xhtml`).
+- `split_pdf` puts every page of a PDF in its own PDF file, returned in a ZIP file.
+- `extract_pdf_pages` calls the `extract-pages` tool of the API and keeps the pages in the order they are written.
+- A refused web page address or page range, a blank page and a single-page PDF to split get their own messages, which say what to change.
+
 ## 1.0.1 (2026-10-05)
 
 - The instructions given to the assistant follow the quota rule of the API: a refused setting, such as a page range that does not exist, is no longer counted as a conversion. A file that conv2pdf reads and then refuses still is.

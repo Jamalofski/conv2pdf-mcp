@@ -55,7 +55,10 @@ test('convert_to_pdf uploads the file, writes the PDF next to it and deletes the
 });
 
 test('convert_to_pdf picks the conv2pdf tool from the extension, whatever its case', async () => {
-  const cases = { 'photo.PNG': 'image-to-pdf', 'IMG_1.heic': 'heic-to-pdf', 'book.epub': 'epub-to-pdf', 'notes.pages': 'office-to-pdf', 'sheet.xlsx': 'office-to-pdf' };
+  const cases = {
+    'photo.PNG': 'image-to-pdf', 'IMG_1.heic': 'heic-to-pdf', 'book.epub': 'epub-to-pdf', 'notes.pages': 'office-to-pdf',
+    'sheet.xlsx': 'office-to-pdf', 'drawing.EPS': 'ps-to-pdf', 'print.ps': 'ps-to-pdf', 'page.htm': 'html-to-pdf',
+  };
   const t = await setup({ files: Object.fromEntries(Object.keys(cases).map((name) => [name, 'x'])) });
   try {
     for (const [name, tool] of Object.entries(cases)) {
@@ -138,7 +141,9 @@ test('each PDF tool calls its conv2pdf tool with its fields and names its result
     ['convert_pdf_to_word', { password: 'open' }, 'pdf-to-word', { password: 'open' }, 'doc.docx'],
     ['convert_pdf_to_images', { format: 'jpg' }, 'pdf-to-image', { format: 'jpg' }, 'doc.zip'],
     ['convert_pdf_to_images', {}, 'pdf-to-image', {}, 'doc (2).zip'],
-    ['extract_pdf_pages', { pages: '1-5,7', password: 'open' }, 'split-pdf', { ranges: '1-5,7', password: 'open' }, 'doc-pages.pdf'],
+    ['extract_pdf_pages', { pages: '1-5,7', password: 'open' }, 'extract-pages', { ranges: '1-5,7', password: 'open' }, 'doc-pages.pdf'],
+    ['split_pdf', {}, 'split-pdf', {}, 'doc-split.zip'],
+    ['split_pdf', { password: 'open' }, 'split-pdf', { password: 'open' }, 'doc-split (2).zip'],
     ['rotate_pdf', { rotation: 90 }, 'rotate-pdf', { rotation: '90' }, 'doc-rotated.pdf'],
     ['add_page_numbers', { position: 'bottom-right', format: 'simple' }, 'page-numbers-pdf', { position: 'bottom-right', format: 'simple' }, 'doc-numbered.pdf'],
     ['add_watermark', { text: 'DRAFT' }, 'watermark-pdf', { text: 'DRAFT' }, 'doc-watermarked.pdf'],
@@ -183,6 +188,46 @@ test('merge_pdfs sends the files in the order given and writes next to the first
   }
 });
 
+test('convert_url_to_pdf sends the address and no file, and writes the PDF at output_path', async () => {
+  const t = await setup();
+  try {
+    const output_path = t.space.file('page.pdf');
+    const result = await t.call('convert_url_to_pdf', { url: ' https://example.com/pricing ', output_path });
+    assert.equal(result.isError, undefined);
+    assert.deepEqual(result.structuredContent, { output_path, size_bytes: RESULT.length, quota: QUOTA });
+    assert.deepEqual(t.api.calls.map((call) => `${call.method} ${call.path}`), [
+      'POST /v1/convert/url-to-pdf', 'GET /v1/download/job1', 'DELETE /v1/job/job1',
+    ]);
+    assert.deepEqual(t.api.calls[0].files, []);
+    assert.deepEqual(t.api.calls[0].fields, { url: 'https://example.com/pricing' });
+
+    const definition = t.tools.find((tool) => tool.name === 'convert_url_to_pdf');
+    assert.deepEqual(definition.inputSchema.required, ['url', 'output_path']);
+    assert.equal(definition.inputSchema.properties.input_path, undefined);
+  } finally {
+    await t.close();
+  }
+});
+
+test('convert_url_to_pdf needs an address and an output_path, and a refused address leaves no file', async () => {
+  const t = await setup({
+    respond: (call) => (call.method === 'POST' ? { status: 422, body: { error: 'invalid_url', cause: 'local_name' } } : undefined),
+  });
+  try {
+    const output_path = t.space.file('page.pdf');
+    assert.match(text(await t.call('convert_url_to_pdf', { output_path })), /"url" is required/);
+    assert.match(text(await t.call('convert_url_to_pdf', { url: 'https://example.com/' })), /"output_path" is required/);
+    assert.equal(t.api.calls.length, 0);
+
+    const refused = await t.call('convert_url_to_pdf', { url: 'http://printer/', output_path });
+    assert.equal(refused.isError, true);
+    assert.equal(text(refused), 'This web page address cannot be converted. conv2pdf only opens public web pages, not names of a local network.');
+    assert.deepEqual(await fs.readdir(t.space.dir), []);
+  } finally {
+    await t.close();
+  }
+});
+
 test('a required argument that is missing is refused before any upload', async () => {
   const t = await setup({ files: { 'doc.pdf': 'a pdf' } });
   try {
@@ -210,7 +255,13 @@ test('a refusal of the API becomes a tool error the model can act on, and leaves
     [415, { error: 'unsupported_content', detected_type: 'epub' }, 'compress_pdf', /EPUB e-book.*\.epub.*convert_to_pdf/],
     [415, { error: 'unsupported_content', detected_type: 'constructor' }, 'compress_pdf', /does not match this tool/],
     [413, { error: 'file_too_large', max_bytes: 10485760, plan: 'dev' }, 'compress_pdf', /larger than the 10 MB per file/],
-    [400, { error: 'invalid_page_range', range: '9-12', total_pages: 1 }, 'extract_pdf_pages', /"9-12" are not valid for this PDF of 1 page\./],
+    [400, { error: 'invalid_page_range', range: '9-12', cause: 'beyond_last_page', total_pages: 1 }, 'extract_pdf_pages', /"9-12" are not valid\. The PDF has 1 page\.$/],
+    [400, { error: 'invalid_page_range', range: '1-3', cause: 'whole_document' }, 'extract_pdf_pages', /the whole document, in its order/],
+    [400, { error: 'invalid_page_range', range: '1--2', cause: 'syntax' }, 'extract_pdf_pages', /"1--2" are not valid\. Use page numbers and ranges/],
+    [422, { error: 'pdf_single_page' }, 'split_pdf', /single page: there is nothing to split/],
+    [422, { error: 'ps_blank_output' }, 'compress_pdf', /PostScript file draws no page/],
+    [415, { error: 'unsupported_content', detected_type: 'html' }, 'compress_pdf', /web page: give it the \.html extension and use convert_to_pdf/],
+    [415, { error: 'unsupported_content', detected_type: 'postscript' }, 'compress_pdf', /PostScript document.*\.ps or \.eps/],
     [400, { error: 'password_too_short', min: 6 }, 'protect_pdf', /at least 6 characters/],
     [422, { error: 'some_new_code' }, 'compress_pdf', /refused the request \(some_new_code\)/],
     [500, { error: 'conversion_failed' }, 'compress_pdf', /could not process this file.*is not counted against the quota/],
