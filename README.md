@@ -89,11 +89,7 @@ npm test
 
 runs the tests against a fake conv2pdf API on a local port: no key and no network are needed.
 
-```bash
-npm run check-tools
-```
-
-compares the extensions `convert_to_pdf` routes on with what the live API accepts (`GET /v1/tools`).
+The tools of the server and the extensions `convert_to_pdf` routes on follow what the live API publishes (`GET /v1/tools`): our monitoring compares them every day, and says when the API gains a tool or an extension that the server does not have.
 
 ### Plugin
 
@@ -109,7 +105,7 @@ check the manifests, then start a session with the plugin loaded from the folder
 ### Releasing
 
 1. Set the version in `package.json`, `server.json` and `plugin/.claude-plugin/plugin.json`, and date its section in `CHANGELOG.md`.
-2. Run `npm test` and `npm run check-tools`.
+2. Run `npm test`.
 3. Commit, then push a tag named after the version: the **Publish** workflow publishes the package to npm through Trusted Publishing, with a provenance statement.
 4. Publish the entry of the [MCP Registry](https://registry.modelcontextprotocol.io): `mcp-publisher login http --domain conv2pdf.com`, then `mcp-publisher publish`. The name `com.conv2pdf/conv2pdf` is proved by the public key served at `https://conv2pdf.com/.well-known/mcp-registry-auth`.
 5. When the skill changed, upload it again to its [Agensi listing](https://www.agensi.io/skills/conv2pdf-convert-and-edit-pdfs-from-your-agent), as a new version: a ZIP of a `conv2pdf/` folder that holds the `SKILL.md`. Nothing updates the listing from this repository.

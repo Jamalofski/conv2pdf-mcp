@@ -20,7 +20,7 @@ export const INSTRUCTIONS =
   'tells what is left.';
 
 // convert_to_pdf picks the conv2pdf tool from the extension of the file. These lists are
-// the `accepted_exts` of GET /v1/tools: `npm run check-tools` compares them.
+// the `accepted_exts` of GET /v1/tools: our monitoring compares them with the live API.
 export const TO_PDF_TOOLS = {
   'office-to-pdf': [
     '.doc', '.docx', '.docm', '.odt', '.rtf', '.txt', '.xls', '.xlsx', '.xlsm', '.ods', '.csv', '.ppt', '.pptx',

@@ -44,7 +44,6 @@
     "url": "https://github.com/Jamalofski/conv2pdf-mcp/issues"
   },
   "scripts": {
-    "test": "node --test test/*.test.js",
-    "check-tools": "node scripts/check-tools.mjs"
+    "test": "node --test test/*.test.js"
   }
 }
