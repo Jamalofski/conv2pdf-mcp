@@ -14,7 +14,7 @@ The conv2pdf tools convert and edit files that are on the user's computer. A too
 - **The files leave the computer.** A file given to a tool is uploaded to conv2pdf, on OVHcloud servers in France, and deleted there once the result is on disk. Say so once, before the first file, when the user said the document is confidential or when it is of a kind that usually is: a contract, a payslip, a medical or an identity document. Otherwise do not ask for each file.
 - **Each call counts.** A conversion uses one unit of the quota of the API key. The Dev plan has 300 units in all, valid for 12 months and not renewed. `get_quota` is free, and every result carries the quota as it stands after the call.
 - **Give absolute paths.** A relative path is read from the working directory of the server, which may not be the folder the user is in. `~` is the home folder.
-- **No conv2pdf tool in the list** means the MCP server is not installed: point the user to https://github.com/jamalofski/conv2pdf-mcp#installation.
+- **No conv2pdf tool in the list** means the MCP server is not installed: point the user to https://github.com/conv2pdf/mcp#installation.
 
 ## Which tool
 

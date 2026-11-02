@@ -8,7 +8,7 @@
     "url": "https://conv2pdf.com"
   },
   "homepage": "https://conv2pdf.com/en/api/",
-  "repository": "https://github.com/jamalofski/conv2pdf-mcp",
+  "repository": "https://github.com/conv2pdf/mcp",
   "license": "MIT",
   "keywords": ["pdf", "pdf conversion", "word to pdf", "pdf to word", "merge pdf", "compress pdf", "mcp"],
   "userConfig": {

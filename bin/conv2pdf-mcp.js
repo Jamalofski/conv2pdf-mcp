@@ -14,7 +14,7 @@ MCP server of the conv2pdf API. An MCP client starts it and talks to it over std
     }
   }
 
-Documentation: https://github.com/jamalofski/conv2pdf-mcp
+Documentation: https://github.com/conv2pdf/mcp
 `;
 
 const argument = process.argv[2];

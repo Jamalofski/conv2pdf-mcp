@@ -35,7 +35,7 @@ In Claude Desktop, Cursor and the other clients configured with a JSON file:
 Or, in Claude Code, install the plugin: the same server, with a skill that tells the assistant which tool to call, in which order, and what a call costs.
 
 ```
-/plugin marketplace add jamalofski/conv2pdf-mcp
+/plugin marketplace add conv2pdf/mcp
 /plugin install conv2pdf@conv2pdf
 ```
 
@@ -118,7 +118,7 @@ check the manifests, then start a session with the plugin loaded from the folder
 
 ## Support
 
-Open an [issue](https://github.com/jamalofski/conv2pdf-mcp/issues) or write to contact@conv2pdf.com.
+Open an [issue](https://github.com/conv2pdf/mcp/issues) or write to contact@conv2pdf.com.
 
 ## License
 
