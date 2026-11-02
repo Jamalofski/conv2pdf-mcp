@@ -2,7 +2,7 @@
 import { main, version } from '../src/index.js';
 
 const HELP = `conv2pdf-mcp ${version}
-MCP server of the conv2pdf API. An MCP client starts it and talks to it over stdio:
+MCP server of the Conv2pdf API. An MCP client starts it and talks to it over stdio:
 
   {
     "mcpServers": {

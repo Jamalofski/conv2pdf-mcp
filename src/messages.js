@@ -1,12 +1,12 @@
-// What a refusal of the conv2pdf API means, said to the model: it reads this text, so it
+// What a refusal of the Conv2pdf API means, said to the model: it reads this text, so it
 // must tell what to change or what to report to the user.
 
 const PRICING_URL = 'https://conv2pdf.com/en/api/pricing/';
 export const KEYS_URL = 'https://conv2pdf.com/en/dashboard/#developer';
 
 export const NO_KEY =
-  'No conv2pdf API key. Set the CONV2PDF_API_KEY environment variable in the configuration of this MCP server. ' +
-  `Keys are created in the Developer tab of the conv2pdf dashboard: ${KEYS_URL}`;
+  'No Conv2pdf API key. Set the CONV2PDF_API_KEY environment variable in the configuration of this MCP server. ' +
+  `Keys are created in the Developer tab of the Conv2pdf dashboard: ${KEYS_URL}`;
 
 // A table entry for a value from the API, never a property every object inherits.
 const own = (table, key) => (typeof key === 'string' && Object.hasOwn(table, key) ? table[key] : undefined);
@@ -21,9 +21,9 @@ const WEB_PAGE = 'This file contains a web page, not the expected document.';
 const URL_CAUSES = {
   malformed: 'Write the full address, starting with https:// or http://.',
   scheme: 'Only http and https addresses can be converted.',
-  credentials: 'Remove the user name and password from the address: conv2pdf opens the page without signing in.',
-  private_address: 'conv2pdf only opens public web pages, not addresses of a private or local network.',
-  local_name: 'conv2pdf only opens public web pages, not names of a local network.',
+  credentials: 'Remove the user name and password from the address: Conv2pdf opens the page without signing in.',
+  private_address: 'Conv2pdf only opens public web pages, not addresses of a private or local network.',
+  local_name: 'Conv2pdf only opens public web pages, not names of a local network.',
   too_long: 'The address is too long.',
 };
 
@@ -41,7 +41,7 @@ function rangeCause(body) {
   return 'Use page numbers and ranges separated by commas, such as 1-5,7,10-12.';
 }
 
-// What conv2pdf found in a file that does not match the tool (`detected_type`).
+// What Conv2pdf found in a file that does not match the tool (`detected_type`).
 const CONTENT_HINTS = {
   postscript: 'This file is a PostScript document: give it the .ps or .eps extension and use convert_to_pdf.',
   pdf: 'This file is already a PDF.',
@@ -68,32 +68,32 @@ const CONTENT_HINTS = {
   zip_corrupt: 'This file is damaged or incomplete.',
   msg: 'This file is an Outlook message (.msg), not a document.',
   iwork_numbers:
-    'This file is a Numbers spreadsheet, which conv2pdf does not convert. In Numbers, choose File > Export To > PDF.',
+    'This file is a Numbers spreadsheet, which Conv2pdf does not convert. In Numbers, choose File > Export To > PDF.',
   iwork_keynote:
-    'This file is a Keynote presentation, which conv2pdf does not convert. In Keynote, choose File > Export To > PDF.',
-  iwork: 'conv2pdf converts Apple Pages documents only, named with their .pages extension.',
+    'This file is a Keynote presentation, which Conv2pdf does not convert. In Keynote, choose File > Export To > PDF.',
+  iwork: 'Conv2pdf converts Apple Pages documents only, named with their .pages extension.',
 };
 
 // One entry per code of the `error` field, as text or built from the response body.
 const MESSAGES = {
-  invalid_api_key: `conv2pdf did not accept the API key. Check CONV2PDF_API_KEY in the configuration of this MCP server. Keys are created in the Developer tab of the conv2pdf dashboard: ${KEYS_URL}`,
-  account_not_provisioned: `This API key has no conv2pdf API plan. Plans: ${PRICING_URL}`,
-  quota_exceeded: `The conv2pdf quota of this API key is used up. Paid plans renew it every month, the Dev trial does not. Plans: ${PRICING_URL}`,
-  credits_expired: `The conv2pdf trial credits have expired. Plans: ${PRICING_URL}`,
-  rate_limited: (body, retryAfter) => `The conv2pdf rate limit is reached. Try again in ${retryAfter} seconds.`,
-  server_busy: (body, retryAfter) => `The conv2pdf conversion queue is full. Try again in ${retryAfter} seconds.`,
+  invalid_api_key: `Conv2pdf did not accept the API key. Check CONV2PDF_API_KEY in the configuration of this MCP server. Keys are created in the Developer tab of the Conv2pdf dashboard: ${KEYS_URL}`,
+  account_not_provisioned: `This API key has no Conv2pdf API plan. Plans: ${PRICING_URL}`,
+  quota_exceeded: `The Conv2pdf quota of this API key is used up. Paid plans renew it every month, the Dev trial does not. Plans: ${PRICING_URL}`,
+  credits_expired: `The Conv2pdf trial credits have expired. Plans: ${PRICING_URL}`,
+  rate_limited: (body, retryAfter) => `The Conv2pdf rate limit is reached. Try again in ${retryAfter} seconds.`,
+  server_busy: (body, retryAfter) => `The Conv2pdf conversion queue is full. Try again in ${retryAfter} seconds.`,
   file_too_large: (body) =>
-    `The file is larger than ${Number.isInteger(body.max_bytes) ? `the ${megabytes(body.max_bytes)} per file` : 'what'} this conv2pdf plan allows. Plans: ${PRICING_URL}`,
-  payload_too_large: 'The request is larger than conv2pdf accepts.',
-  plan_limit_files: `This conv2pdf plan does not merge that many files at once: 2 on the Dev plan, up to 20 on paid plans. Plans: ${PRICING_URL}`,
+    `The file is larger than ${Number.isInteger(body.max_bytes) ? `the ${megabytes(body.max_bytes)} per file` : 'what'} this Conv2pdf plan allows. Plans: ${PRICING_URL}`,
+  payload_too_large: 'The request is larger than Conv2pdf accepts.',
+  plan_limit_files: `This Conv2pdf plan does not merge that many files at once: 2 on the Dev plan, up to 20 on paid plans. Plans: ${PRICING_URL}`,
   not_enough_files: 'Merging needs at least 2 PDFs.',
-  too_many_files: 'conv2pdf merges up to 20 PDFs at a time.',
+  too_many_files: 'Conv2pdf merges up to 20 PDFs at a time.',
   unsupported_content: (body) =>
     own(CONTENT_HINTS, body.detected_type) ||
-    'The content of the file does not match this tool: conv2pdf checks what the file contains, not only its name.',
-  unsupported_format: 'conv2pdf cannot read this image format. Use a PNG, JPG, WebP, GIF or TIFF image.',
+    'The content of the file does not match this tool: Conv2pdf checks what the file contains, not only its name.',
+  unsupported_format: 'Conv2pdf cannot read this image format. Use a PNG, JPG, WebP, GIF or TIFF image.',
   empty_file: 'The file is empty.',
-  source_unreadable: 'conv2pdf could not read this file: it may be damaged or incomplete.',
+  source_unreadable: 'Conv2pdf could not read this file: it may be damaged or incomplete.',
   field_required: (body) => `The "${typeof body.field === 'string' ? body.field : 'required'}" field is empty.`,
   invalid_page_range: (body) =>
     `The pages${typeof body.range === 'string' ? ` "${body.range}"` : ''} are not valid. ${rangeCause(body)}`,
@@ -113,10 +113,10 @@ const MESSAGES = {
     Number.isInteger(body.max_pages)
       ? `The document has more than the ${body.max_pages.toLocaleString('en-US')} pages this tool accepts.`
       : 'The document has too many pages for this tool.',
-  unsupported_characters: 'The watermark text has no character conv2pdf can print: use Latin letters, digits and punctuation.',
+  unsupported_characters: 'The watermark text has no character Conv2pdf can print: use Latin letters, digits and punctuation.',
   epub_blank_output:
     'This e-book cannot be converted: its pages are full-screen images (comics, picture books, manga), and their layout does not survive the conversion to PDF.',
-  epub_too_long: 'The e-book is longer than the 1,500 pages conv2pdf converts at once.',
+  epub_too_long: 'The e-book is longer than the 1,500 pages Conv2pdf converts at once.',
   pdf_single_page: 'This PDF has a single page: there is nothing to split.',
   ps_blank_output:
     'This PostScript file draws no page: a file that only holds a font or a library of procedures, or whose program fails, produces none.',
@@ -125,21 +125,21 @@ const MESSAGES = {
   invalid_url: (body) => `This web page address cannot be converted. ${own(URL_CAUSES, body.cause) ?? ''}`.trim(),
   url_unreachable: 'The web page could not be reached. Check the address, and that the site is online and public.',
   url_http_error: (body) =>
-    `The web page answered with an error${Number.isInteger(body.http_status) ? ` (HTTP ${body.http_status})` : ''}. Check that the address opens in a browser without signing in: conv2pdf opens the page without a session.`,
+    `The web page answered with an error${Number.isInteger(body.http_status) ? ` (HTTP ${body.http_status})` : ''}. Check that the address opens in a browser without signing in: Conv2pdf opens the page without a session.`,
   url_blocked:
-    'The web page leads to a private network address: conv2pdf only opens public web pages, and the page or one of its redirects points to a private or local network.',
+    'The web page leads to a private network address: Conv2pdf only opens public web pages, and the page or one of its redirects points to a private or local network.',
   url_blank_page:
     'The web page prints as a blank page: its content may need a login, or be hidden for printing.',
   no_file_expected: 'convert_url_to_pdf takes the address of a web page, not a file.',
-  tool_not_found: 'conv2pdf does not offer this tool: update the conv2pdf-mcp package.',
+  tool_not_found: 'Conv2pdf does not offer this tool: update the conv2pdf-mcp package.',
   output_too_large: 'The result is too large to be delivered.',
   // The API refunds the quota on these two, and on a refused setting (page range, rotation,
   // password length). A refusal that follows the reading of the file (unreadable or scanned
   // PDF, too many pages) stays counted.
-  conversion_failed: 'conv2pdf could not process this file. The failure is on its side and is not counted against the quota.',
+  conversion_failed: 'Conv2pdf could not process this file. The failure is on its side and is not counted against the quota.',
   conversion_timeout: 'The conversion took too long and was stopped. It is not counted against the quota.',
-  file_expired: 'The converted file is no longer available on conv2pdf.',
-  job_deleted: 'The conversion was deleted on conv2pdf before it could be downloaded.',
+  file_expired: 'The converted file is no longer available on Conv2pdf.',
+  job_deleted: 'The conversion was deleted on Conv2pdf before it could be downloaded.',
 };
 MESSAGES.missing_bearer_token = MESSAGES.invalid_api_key;
 
@@ -153,7 +153,7 @@ export function apiErrorText(error, overrides = {}) {
   if (message) return typeof message === 'function' ? message(body, retryAfter) : message;
   if (status === 401) return MESSAGES.invalid_api_key;
   if (status >= 500) {
-    return 'conv2pdf is temporarily unavailable: try again in a few minutes.';
+    return 'Conv2pdf is temporarily unavailable: try again in a few minutes.';
   }
-  return code ? `conv2pdf refused the request (${code}).` : `conv2pdf returned HTTP ${status}.`;
+  return code ? `Conv2pdf refused the request (${code}).` : `Conv2pdf returned HTTP ${status}.`;
 }

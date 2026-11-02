@@ -20,7 +20,7 @@ export function main({ env = process.env, input = process.stdin, output = proces
   });
   const { tools, callTool } = createTools({ api, hasKey: apiKey !== '' });
   const server = createServer({
-    info: { name: 'conv2pdf', title: 'conv2pdf', version, websiteUrl: 'https://conv2pdf.com/en/api/' },
+    info: { name: 'conv2pdf', title: 'Conv2pdf', version, websiteUrl: 'https://conv2pdf.com/en/api/' },
     instructions: INSTRUCTIONS,
     tools,
     callTool,

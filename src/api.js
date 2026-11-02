@@ -1,10 +1,10 @@
-// The conv2pdf API, as the tools need it: convert files, download the result, read the quota.
+// The Conv2pdf API, as the tools need it: convert files, download the result, read the quota.
 import { openAsBlob } from 'node:fs';
 import path from 'node:path';
 
 export const DEFAULT_BASE_URL = 'https://api.conv2pdf.com/v1';
 
-// conv2pdf gives a conversion 90 seconds; the rest of the time is the transfer of a file
+// Conv2pdf gives a conversion 90 seconds; the rest of the time is the transfer of a file
 // of up to 200 MB, both ways, on the user's connection. A backstop: the MCP client has
 // its own timeout and cancels the request first.
 const REQUEST_TIMEOUT_MS = 5 * 60_000;
@@ -19,7 +19,7 @@ const DEFAULT_RETRY_AFTER_SECONDS = 30;
 /** A response of the API that is not a success: HTTP status, JSON body, seconds to wait. */
 export class ApiError extends Error {
   constructor(status, body, retryAfter) {
-    super(`conv2pdf answered HTTP ${status}`);
+    super(`Conv2pdf answered HTTP ${status}`);
     this.status = status;
     this.body = body;
     this.code = typeof body.error === 'string' ? body.error : undefined;
@@ -48,7 +48,7 @@ function retryAfterSeconds(response, body) {
 }
 
 /**
- *   apiKey: the conv2pdf API key
+ *   apiKey: the Conv2pdf API key
  *   baseUrl: the API root, changed only by the tests
  *   userAgent: `conv2pdf-mcp/<version>`
  */
@@ -94,7 +94,7 @@ export function createClient({ apiKey, baseUrl = DEFAULT_BASE_URL, userAgent, wa
       return { job, download };
     },
 
-    /** Deletes the files of a job from conv2pdf. Best effort: they expire after one hour anyway. */
+    /** Deletes the files of a job from Conv2pdf. Best effort: they expire after one hour anyway. */
     async deleteJob(jobId) {
       try {
         await request('DELETE', `/job/${encodeURIComponent(jobId)}`);

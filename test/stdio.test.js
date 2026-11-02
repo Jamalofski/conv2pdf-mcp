@@ -20,7 +20,7 @@ test('handshake, tool list and a clean exit when the input closes', { timeout: 2
   server.send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'test', version: '1' } } });
   const init = JSON.parse(await server.line());
   assert.equal(init.result.protocolVersion, '2025-11-25');
-  assert.deepEqual(init.result.serverInfo, { name: 'conv2pdf', title: 'conv2pdf', version, websiteUrl: 'https://conv2pdf.com/en/api/' });
+  assert.deepEqual(init.result.serverInfo, { name: 'conv2pdf', title: 'Conv2pdf', version, websiteUrl: 'https://conv2pdf.com/en/api/' });
 
   server.send({ jsonrpc: '2.0', method: 'notifications/initialized' });
   server.send({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
@@ -79,7 +79,7 @@ test('without an API key, or with a blank one, a call says how to set the key an
     server.send({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'get_quota', arguments: {} } });
     const { result } = JSON.parse(await server.line());
     assert.equal(result.isError, true);
-    assert.match(result.content[0].text, /^No conv2pdf API key\. Set the CONV2PDF_API_KEY environment variable/);
+    assert.match(result.content[0].text, /^No Conv2pdf API key\. Set the CONV2PDF_API_KEY environment variable/);
     assert.match(result.content[0].text, /dashboard\/#developer/);
     assert.equal(await server.stop(), 0);
   }

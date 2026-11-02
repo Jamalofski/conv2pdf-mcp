@@ -1,4 +1,4 @@
-// A fake conv2pdf API on a local port, and a way to drive the real server over stdio.
+// A fake Conv2pdf API on a local port, and a way to drive the real server over stdio.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import http from 'node:http';

@@ -9,17 +9,17 @@ import { InputError, discardOutput, inputFile, reserveOutput } from './files.js'
 import { NO_KEY, apiErrorText } from './messages.js';
 
 export const INSTRUCTIONS =
-  'conv2pdf converts and edits files that are on this computer: Office documents, images, e-books, PostScript and ' +
+  'Conv2pdf converts and edits files that are on this computer: Office documents, images, e-books, PostScript and ' +
   'HTML files to PDF, PDF to Word or to images, and merging, splitting, extracting pages, rotating, numbering, ' +
   'watermarking, compressing, protecting or unlocking PDFs. It also converts a public web page to PDF from its ' +
   'address. Give a tool the path of the file: the result is written next to it, or at output_path, and its path is ' +
-  'returned. The files are uploaded to conv2pdf, hosted in the EU (France), which deletes them once the result is ' +
+  'returned. The files are uploaded to Conv2pdf, hosted in the EU (France), which deletes them once the result is ' +
   'downloaded. Each conversion uses one unit of the quota of the API key, including one ' +
-  'that conv2pdf refuses after reading the file (an unreadable or scanned PDF, too many pages); a refused setting, ' +
-  'such as a page range that does not exist, and a failure on the side of conv2pdf are not counted. get_quota ' +
+  'that Conv2pdf refuses after reading the file (an unreadable or scanned PDF, too many pages); a refused setting, ' +
+  'such as a page range that does not exist, and a failure on the side of Conv2pdf are not counted. get_quota ' +
   'tells what is left.';
 
-// convert_to_pdf picks the conv2pdf tool from the extension of the file. These lists are
+// convert_to_pdf picks the Conv2pdf tool from the extension of the file. These lists are
 // the `accepted_exts` of GET /v1/tools: our monitoring compares them with the live API.
 export const TO_PDF_TOOLS = {
   'office-to-pdf': [
@@ -44,7 +44,7 @@ function toPdfTool(input) {
   );
 }
 
-const SENT = 'The file is uploaded to conv2pdf and the call counts as one conversion.';
+const SENT = 'The file is uploaded to Conv2pdf and the call counts as one conversion.';
 
 const INPUT_PATH = {
   type: 'string',
@@ -66,7 +66,7 @@ const PDF_PASSWORD = {
 };
 
 // One entry per tool that converts files:
-//   api: the conv2pdf tool, or a function of the input file that names it
+//   api: the Conv2pdf tool, or a function of the input file that names it
 //   properties, required: the arguments besides input_path and output_path
 //   fields: the form fields sent with the file, from the arguments
 //   suffix, extension: the default name of the result
@@ -87,7 +87,7 @@ const FILE_TOOLS = [
     title: 'Convert Web Page to PDF',
     description:
       'Converts the public web page at an address to PDF, as a browser prints it: the text stays selectable and the links work. The page is opened without a session, so a page behind a login is out of reach.',
-    sent: 'The address is sent to conv2pdf, which opens the page, and the call counts as one conversion.',
+    sent: 'The address is sent to Conv2pdf, which opens the page, and the call counts as one conversion.',
     api: 'url-to-pdf',
     noFile: true,
     properties: {
@@ -314,7 +314,7 @@ const GET_QUOTA = {
   name: 'get_quota',
   title: 'Get Quota',
   description:
-    'Returns the plan of the conv2pdf API key and how many conversions it has used and may still use. Reading the quota is free.',
+    'Returns the plan of the Conv2pdf API key and how many conversions it has used and may still use. Reading the quota is free.',
   inputSchema: { type: 'object', additionalProperties: false },
   annotations: { title: 'Get Quota', readOnlyHint: true, openWorldHint: false },
 };
@@ -365,7 +365,7 @@ async function convertFile(spec, args, api, signal) {
 }
 
 /**
- *   api: the conv2pdf client (api.js)
+ *   api: the Conv2pdf client (api.js)
  *   hasKey: whether an API key is configured
  * Returns the tool definitions and the function that runs a call.
  */
@@ -382,9 +382,9 @@ export function createTools({ api, hasKey }) {
     } catch (error) {
       if (error instanceof InputError) return toolError(error.message);
       if (error instanceof ApiError) return toolError(apiErrorText(error, spec?.messages));
-      if (error.name === 'TimeoutError') return toolError('conv2pdf did not answer in time. Try again in a moment.');
+      if (error.name === 'TimeoutError') return toolError('Conv2pdf did not answer in time. Try again in a moment.');
       if (error instanceof TypeError && error.message === 'fetch failed') {
-        return toolError('Could not reach conv2pdf. Check the network connection and try again.');
+        return toolError('Could not reach Conv2pdf. Check the network connection and try again.');
       }
       if (typeof error.code === 'string' && error.syscall) {
         return toolError(`Could not write the result: ${error.message}`);

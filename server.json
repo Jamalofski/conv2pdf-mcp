@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.conv2pdf/conv2pdf",
-  "title": "conv2pdf",
+  "title": "Conv2pdf",
   "description": "Convert Office files, images, e-books and web pages to PDF; merge, split, compress or protect PDFs.",
   "version": "1.1.1",
   "websiteUrl": "https://conv2pdf.com/en/api/",
@@ -27,7 +27,7 @@
       "environmentVariables": [
         {
           "name": "CONV2PDF_API_KEY",
-          "description": "conv2pdf API key, created in the Developer tab of the conv2pdf dashboard",
+          "description": "Conv2pdf API key, created in the Developer tab of the Conv2pdf dashboard",
           "isRequired": true,
           "isSecret": true,
           "format": "string"

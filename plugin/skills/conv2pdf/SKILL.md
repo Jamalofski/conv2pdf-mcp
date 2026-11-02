@@ -1,20 +1,20 @@
 ---
 name: conv2pdf
-description: Convert and edit the files of the user's computer with the conv2pdf tools. Use when the user asks to turn a Word, Excel, PowerPoint, OpenDocument, Pages, image, HEIC, EPUB, PostScript or HTML file, or a web page at an address, into a PDF, to turn a PDF into a Word document or into images, or to merge, split, extract pages from, rotate, number, watermark, compress, password-protect or unlock PDFs, for one file or for a whole folder.
+description: Convert and edit the files of the user's computer with the Conv2pdf tools. Use when the user asks to turn a Word, Excel, PowerPoint, OpenDocument, Pages, image, HEIC, EPUB, PostScript or HTML file, or a web page at an address, into a PDF, to turn a PDF into a Word document or into images, or to merge, split, extract pages from, rotate, number, watermark, compress, password-protect or unlock PDFs, for one file or for a whole folder.
 license: MIT
-compatibility: Needs the conv2pdf MCP server (npm package conv2pdf-mcp, Node.js 22 or later) and a conv2pdf API key.
+compatibility: Needs the Conv2pdf MCP server (npm package conv2pdf-mcp, Node.js 22 or later) and a Conv2pdf API key.
 ---
 
-# conv2pdf
+# Conv2pdf
 
-The conv2pdf tools convert and edit files that are on the user's computer. A tool takes the path of a file, sends the file to conv2pdf and writes the result next to it. This skill tells which tool to call, in which order, and what a call costs.
+The Conv2pdf tools convert and edit files that are on the user's computer. A tool takes the path of a file, sends the file to Conv2pdf and writes the result next to it. This skill tells which tool to call, in which order, and what a call costs.
 
 ## Before the first call
 
-- **The files leave the computer.** A file given to a tool is uploaded to conv2pdf, on OVHcloud servers in France, and deleted there once the result is on disk. Say so once, before the first file, when the user said the document is confidential or when it is of a kind that usually is: a contract, a payslip, a medical or an identity document. Otherwise do not ask for each file.
+- **The files leave the computer.** A file given to a tool is uploaded to Conv2pdf, on OVHcloud servers in France, and deleted there once the result is on disk. Say so once, before the first file, when the user said the document is confidential or when it is of a kind that usually is: a contract, a payslip, a medical or an identity document. Otherwise do not ask for each file.
 - **Each call counts.** A conversion uses one unit of the quota of the API key. The Dev plan has 300 units in all, valid for 12 months and not renewed. `get_quota` is free, and every result carries the quota as it stands after the call.
 - **Give absolute paths.** A relative path is read from the working directory of the server, which may not be the folder the user is in. `~` is the home folder.
-- **No conv2pdf tool in the list** means the MCP server is not installed: point the user to https://github.com/conv2pdf/mcp#installation.
+- **No Conv2pdf tool in the list** means the MCP server is not installed: point the user to https://github.com/conv2pdf/mcp#installation.
 
 ## Which tool
 
@@ -35,7 +35,7 @@ The conv2pdf tools convert and edit files that are on the user's computer. A too
 | A PDF that asks for a password | `protect_pdf` | Password of 6 to 64 characters. Can also forbid printing or copying |
 | The password or the restrictions removed | `unlock_pdf` | With the password the user knows: it does not find a forgotten one. No password is needed for a PDF that opens freely but forbids printing or copying |
 
-conv2pdf converts neither Numbers spreadsheets nor Keynote presentations: ask the user to export them from the application, with File > Export To > PDF. It has no OCR either: a scanned PDF does not become a Word document here.
+Conv2pdf converts neither Numbers spreadsheets nor Keynote presentations: ask the user to export them from the application, with File > Export To > PDF. It has no OCR either: a scanned PDF does not become a Word document here.
 
 ## Several steps
 
@@ -66,9 +66,9 @@ A refusal comes back as a sentence that says what to change. Read it before call
 
 - **A refused setting is free.** A page range that does not exist, a password that is too short, a rotation that is not allowed: fix the argument and call again.
 - **A refusal that follows the reading of the file is counted.** A scanned PDF given to `convert_pdf_to_word`, an unreadable file, a document with too many pages: calling again with the same file uses another unit for the same answer. Report it instead.
-- **A failure on the side of conv2pdf is not counted.** Try once more, then report it.
+- **A failure on the side of Conv2pdf is not counted.** Try once more, then report it.
 - **A password that is missing or wrong.** Ask the user for it. Never guess one.
-- **No API key.** In Claude Code with the conv2pdf plugin, the key is the "conv2pdf API key" option of the plugin: `/plugin configure conv2pdf@conv2pdf`, or `/plugin`, Installed tab, conv2pdf, Configure options. Elsewhere it is the `CONV2PDF_API_KEY` variable in the configuration of the MCP server. The user sets it there: never ask for the key in the conversation.
+- **No API key.** In Claude Code with the Conv2pdf plugin, the key is the "Conv2pdf API key" option of the plugin: `/plugin configure conv2pdf@conv2pdf`, or `/plugin`, Installed tab, conv2pdf, Configure options. Elsewhere it is the `CONV2PDF_API_KEY` variable in the configuration of the MCP server. The user sets it there: never ask for the key in the conversation.
 
 ## Passwords
 

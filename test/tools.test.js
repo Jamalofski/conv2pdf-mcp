@@ -1,4 +1,4 @@
-// The tools, in process, against a fake conv2pdf API.
+// The tools, in process, against a fake Conv2pdf API.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -54,7 +54,7 @@ test('convert_to_pdf uploads the file, writes the PDF next to it and deletes the
   }
 });
 
-test('convert_to_pdf picks the conv2pdf tool from the extension, whatever its case', async () => {
+test('convert_to_pdf picks the Conv2pdf tool from the extension, whatever its case', async () => {
   const cases = {
     'photo.PNG': 'image-to-pdf', 'IMG_1.heic': 'heic-to-pdf', 'book.epub': 'epub-to-pdf', 'notes.pages': 'office-to-pdf',
     'sheet.xlsx': 'office-to-pdf', 'drawing.EPS': 'ps-to-pdf', 'print.ps': 'ps-to-pdf', 'page.htm': 'html-to-pdf',
@@ -135,7 +135,7 @@ test('a missing input file, a folder and an empty path are refused before any up
   }
 });
 
-test('each PDF tool calls its conv2pdf tool with its fields and names its result', async () => {
+test('each PDF tool calls its Conv2pdf tool with its fields and names its result', async () => {
   const cases = [
     ['convert_heic_to_jpg', { input: 'a.heic' }, 'heic-to-jpg', {}, 'a.jpg'],
     ['convert_pdf_to_word', { password: 'open' }, 'pdf-to-word', { password: 'open' }, 'doc.docx'],
@@ -221,7 +221,7 @@ test('convert_url_to_pdf needs an address and an output_path, and a refused addr
 
     const refused = await t.call('convert_url_to_pdf', { url: 'http://printer/', output_path });
     assert.equal(refused.isError, true);
-    assert.equal(text(refused), 'This web page address cannot be converted. conv2pdf only opens public web pages, not names of a local network.');
+    assert.equal(text(refused), 'This web page address cannot be converted. Conv2pdf only opens public web pages, not names of a local network.');
     assert.deepEqual(await fs.readdir(t.space.dir), []);
   } finally {
     await t.close();
@@ -267,8 +267,8 @@ test('a refusal of the API becomes a tool error the model can act on, and leaves
     [500, { error: 'conversion_failed' }, 'compress_pdf', /could not process this file.*is not counted against the quota/],
     [504, { error: 'conversion_timeout' }, 'compress_pdf', /took too long.*is not counted against the quota/],
     // The API keeps the quota of a refusal that follows the reading of the file: no promise here.
-    [422, { error: 'source_unreadable' }, 'compress_pdf', /^conv2pdf could not read this file: it may be damaged or incomplete\.$/],
-    [502, {}, 'compress_pdf', /^conv2pdf is temporarily unavailable: try again in a few minutes\.$/],
+    [422, { error: 'source_unreadable' }, 'compress_pdf', /^Conv2pdf could not read this file: it may be damaged or incomplete\.$/],
+    [502, {}, 'compress_pdf', /^Conv2pdf is temporarily unavailable: try again in a few minutes\.$/],
   ];
   for (const [status, body, tool, expected] of cases) {
     const t = await setup({ respond: (call) => (call.method === 'POST' ? { status, body } : undefined), files: { 'doc.pdf': 'a pdf', 'other.pdf': 'a pdf' } });
@@ -399,7 +399,7 @@ test('an unreachable API is reported as such', async () => {
     const { callTool } = createTools({ api: client, hasKey: true });
     const result = await callTool('compress_pdf', { input_path: space.file('doc.pdf') }, { signal: new AbortController().signal });
     assert.equal(result.isError, true);
-    assert.match(text(result), /Could not reach conv2pdf/);
+    assert.match(text(result), /Could not reach Conv2pdf/);
     assert.deepEqual(await fs.readdir(space.dir), ['doc.pdf']);
   } finally {
     await space.cleanup();
