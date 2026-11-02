@@ -3,7 +3,7 @@
   "name": "com.conv2pdf/conv2pdf",
   "title": "conv2pdf",
   "description": "Convert Office files, images, e-books and web pages to PDF; merge, split, compress or protect PDFs.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "websiteUrl": "https://conv2pdf.com/en/api/",
   "icons": [
     {
@@ -20,7 +20,7 @@
     {
       "registryType": "npm",
       "identifier": "conv2pdf-mcp",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "transport": {
         "type": "stdio"
       },

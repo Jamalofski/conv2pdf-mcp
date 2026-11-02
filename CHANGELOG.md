@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1 (2026-11-02)
+
+- The repository moved to the conv2pdf organization: [github.com/conv2pdf/mcp](https://github.com/conv2pdf/mcp). The package, the plugin, the skill and `server.json` point there, and the plugin installs with `/plugin marketplace add conv2pdf/mcp`; the old address redirects.
+
 ## 1.1.0 (2026-10-26)
 
 The server now covers every tool of the conv2pdf API.
